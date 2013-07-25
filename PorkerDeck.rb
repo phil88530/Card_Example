@@ -45,13 +45,36 @@ class PokerHand
   attr_accessor :cards
   def initialize(cards = [])
     @cards = cards
+    self.sort_cards #auto sort cards when init
   end
 
   def sort_cards
     @cards.sort!{|a,b| a.card_value <=> b.card_value }
   end
+
+
+  def is_flush
+    is_flush = false
+    for i in 1..(@cards.count - 1)
+      puts i
+      is_flush = (@cards[i].card_value - @cards[i-1].card_value == 1)
+    end
+
+    is_flush
+  end
+
+  #order cards
+  def ordered_cards
+    card_hash = Hash.new(0)
+    @cards.each do |c|
+      card_hash[c.value] += 1
+    end
+
+    card_hash
+  end
 end
 
 d = Deck.new
 p = PokerHand.new(d.cards.sample(5))
-puts p.cards.to_s
+puts "Getting cards:" + p.cards.to_s
+puts "A hand has values:" + p.ordered_cards.to_s
