@@ -19,6 +19,10 @@ class Card
     'A' => 14
   }
 
+  def self.get_card_value(value)
+    Rank_Values[value]
+  end
+
   def initialize(num)
     @suit = SUITS[num%4]
     @value= RANKS[num%13]
@@ -27,6 +31,7 @@ class Card
   def card_value
     Rank_Values[@value]
   end
+
 
   def to_s
     "#{@suit} #{@value}"
@@ -49,10 +54,15 @@ class PokerHand
     puts "Getting cards:" + @cards.to_s
   end
 
-  def sort_cards
-    @cards.sort!{|a,b| a.card_value <=> b.card_value }
+  #compare methods
+  def is_smaller?(another_deck)
+    if rank != another_deck.rank
+      rank < another_deck.rank
+    else
+      score <=> another_deck.score
+    end
   end
-
+  
   #order cards
   def ordered_cards
     card_hash = Hash.new(0)
@@ -60,7 +70,8 @@ class PokerHand
       card_hash[c.value] += 1
     end
 
-    card_hash
+    #sort by occurance as well
+    card_hash = Hash[card_hash.sort_by{|k,v| v}]
   end
 
   def rank
@@ -83,6 +94,10 @@ class PokerHand
     else  #must be high card
       0
     end
+  end
+
+  def score
+    sort_cards.collect{|c| c.card_value}
   end
 
   #methods for getting card kinds
@@ -133,11 +148,14 @@ class PokerHand
   def is_pair?
     ordered_cards.values.count(2) == 1
   end
+
+  def sort_cards
+    @cards.sort!{|a,b| a.card_value <=> b.card_value }
+  end
 end
 
 d = Deck.new
 p1 = PokerHand.new(d.cards.sample(5))
 p2 = PokerHand.new(d.cards.sample(5))
-puts "p1 is rank #{p1.rank}"
-puts "p2 is rank #{p2.rank}"
+puts "p1 is "+ (p1.is_smaller?(p2)? 'smaller' : 'greater') + " than p2"
 
