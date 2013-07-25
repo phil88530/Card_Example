@@ -46,6 +46,7 @@ class PokerHand
   def initialize(cards = [])
     @cards = cards
     self.sort_cards #auto sort cards when init
+    puts "Getting cards:" + @cards.to_s
   end
 
   def sort_cards
@@ -62,11 +63,33 @@ class PokerHand
     card_hash
   end
 
+  def rank
+    if is_straight_flush?
+      8
+    elsif is_four_of_a_kind?
+      7
+    elsif is_full_house?
+      6
+    elsif is_flush?
+      5
+    elsif is_straight?
+      4
+    elsif is_three_of_a_kind?
+      3
+    elsif is_two_pairs?
+      2
+    elsif is_pair?
+      1
+    else  #must be high card
+      0
+    end
+  end
+
   #methods for getting card kinds
   def is_straight_flush?
     is_straight_flush = true
     for i in 1..(@cards.count - 1)
-      is_flush = false if (@cards[i].card_value - @cards[i-1].card_value == 1) && (@cards[i].suit == @cards[i-1].suit)
+      is_straight_flush = false if (@cards[i].card_value - @cards[i-1].card_value != 1) || (@cards[i].suit != @cards[i-1].suit)
     end
 
     is_straight_flush
@@ -84,16 +107,16 @@ class PokerHand
   def is_flush?
     is_flush = true
     for i in 1..(@cards.count - 1)
-      is_flush = false if (@cards[i].suit == @cards[i-1].suit)
+      is_flush = false if (@cards[i].suit != @cards[i-1].suit)
     end
 
     is_flush
   end
 
-  def Straight?
+  def is_straight?
     is_straight = true
     for i in 1..(@cards.count - 1)
-      is_flush = false if (@cards[i].card_value - @cards[i-1].card_value == 1)
+      is_straight = false if (@cards[i].card_value - @cards[i-1].card_value != 1)
     end
 
     is_straight
@@ -108,12 +131,13 @@ class PokerHand
   end
 
   def is_pair?
-    ordered_cards..values.count(2) == 1
+    ordered_cards.values.count(2) == 1
   end
 end
 
 d = Deck.new
-p = PokerHand.new(d.cards.sample(5))
-puts "Getting cards:" + p.cards.to_s
-puts "A hand has values:" + p.ordered_cards.to_s
+p1 = PokerHand.new(d.cards.sample(5))
+p2 = PokerHand.new(d.cards.sample(5))
+puts "p1 is rank #{p1.rank}"
+puts "p2 is rank #{p2.rank}"
 
